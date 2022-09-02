@@ -1135,9 +1135,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardGlow: {fileID: 5750913181157618899}
   cardImage: {fileID: 5750913180883361327}
-  attackValue: {fileID: 5750913181970456513}
-  healthValue: {fileID: 5750913182065837973}
-  manaValue: {fileID: 5750913182630236474}
+  attackValueText: {fileID: 5750913181970456513}
+  healthValueText: {fileID: 5750913182065837973}
+  manaValueText: {fileID: 5750913182630236474}
+  statChangeTime: 1
 --- !u!1 &5750913182630236472
 GameObject:
   m_ObjectHideFlags: 0
