@@ -9,6 +9,14 @@ public class CardHandController : MonoBehaviour
     [SerializeField] private CardController cardControllerPrefab;
     [SerializeField] private Transform cardsRoot;
     [SerializeField] private CardStatsSO cardStatsSO;
+    [SerializeField] private Transform cardHandCenter;
+    [SerializeField] private Transform cardRotationCenter;
+    [SerializeField] private AnimationCurve cardsVerticalPlacementCurve;
+    [SerializeField] private AnimationCurve cardsHorizontalPlacementCurve;
+    [SerializeField] private float maxCardHandHeight = 0.5f;
+    [SerializeField] private float maxCardHandLength = 7.2f;
+    //[SerializeField] private float totalCardsTwist = 20f;
+    [SerializeField] private float additionalCardRotation = 6f;
     [SerializeField] private int minNumberOfCards = 2;
     [SerializeField] private int maxNumberOfCards = 6;
     [SerializeField] private int minStatValue = -2;
@@ -39,9 +47,23 @@ public class CardHandController : MonoBehaviour
         }
 
         var numberOfCards = Random.Range(minNumberOfCards, maxNumberOfCards + 1);
+        //var startTwist = -1f * (totalCardsTwist / 2f);
+        //var twistPerCard = totalCardsTwist / numberOfCards;
         for (int i = 0; i < numberOfCards; i++)
         {
-            var cardController = Instantiate(cardControllerPrefab, cardsRoot);
+            var cardEvaluationStep = 1f / (numberOfCards + 1);
+            var horizontalEvaluation = cardsHorizontalPlacementCurve.Evaluate(cardEvaluationStep + cardEvaluationStep * i);
+            var cardSpawnPos = new Vector3(
+                cardHandCenter.position.x + maxCardHandLength * horizontalEvaluation, 
+                cardHandCenter.position.y + maxCardHandHeight * cardsVerticalPlacementCurve.Evaluate(cardEvaluationStep + cardEvaluationStep * i), 
+                0.0001f * i);
+            var cardController = Instantiate(cardControllerPrefab, cardSpawnPos, Quaternion.identity, cardsRoot);
+            var cardTransform = cardController.transform;
+            //cardController.transform.Rotate(0f, 0f, startTwist + (twistPerCard * (i + 1)));
+            //cardTransform.position += new Vector3(0f, maxCardHeight * cardsPlacementCurve.Evaluate((float)i / (numberOfCards - 1)), 0f);
+            var lookDirection = cardTransform.position - cardRotationCenter.position;
+            cardTransform.rotation = Quaternion.FromToRotation(transform.up, lookDirection);
+            cardTransform.Rotate(Vector3.forward, additionalCardRotation);
             cardController.SetInfo(cardStatsSO.StartingAttack, cardStatsSO.StartingHealth, cardStatsSO.StartingMana, cardSprite);
             cardController.EventCardDestroyed += OnCardDestroyed;
             cardControllers.Add(cardController);
