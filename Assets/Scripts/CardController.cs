@@ -8,6 +8,7 @@ using Random = UnityEngine.Random;
 public class CardController : MonoBehaviour
 {
     public event Action<CardController> EventCardDestroyed;
+    public event Action EventStatChangeComplete;
 
     [SerializeField] private Image cardGlow;
     [SerializeField] private Image cardImage;
@@ -41,6 +42,9 @@ public class CardController : MonoBehaviour
                 DOTween.To(() => attackValue, x => attackValue = x, newStatValue, statChangeTime).OnUpdate(() =>
                 {
                     attackValueText.text = attackValue.ToString();
+                }).OnComplete(() => 
+                {
+                    EventStatChangeComplete?.Invoke();
                 });
                 break;
             case 1:
@@ -51,19 +55,33 @@ public class CardController : MonoBehaviour
                 {
                     if (healthValue <= 0)
                     {
-                        EventCardDestroyed.Invoke(this);
+                        EventCardDestroyed?.Invoke(this);
                     }
+                    EventStatChangeComplete?.Invoke();
                 });
                 break;
             case 2:
                 DOTween.To(() => manaValue, x => manaValue = x, newStatValue, statChangeTime).OnUpdate(() =>
                 {
                     manaValueText.text = manaValue.ToString();
+                }).OnComplete(() =>
+                {
+                    EventStatChangeComplete?.Invoke();
                 });
                 break;
             default:
                 Debug.LogError("Random value outside stat count");
                 break;
         }
+    }
+
+    public void SelectCard()
+    {
+        cardGlow.gameObject.SetActive(true);
+    }
+
+    public void DeselectCard()
+    {
+        cardGlow.gameObject.SetActive(false);
     }
 }

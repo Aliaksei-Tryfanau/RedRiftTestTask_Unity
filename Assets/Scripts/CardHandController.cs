@@ -14,7 +14,7 @@ public class CardHandController : MonoBehaviour
     [SerializeField] private AnimationCurve cardsVerticalPlacementCurve;
     [SerializeField] private AnimationCurve cardsHorizontalPlacementCurve;
     [SerializeField] private float maxCardHandHeight = 0.5f;
-    [SerializeField] private float maxCardHandLength = 7.2f;
+    [SerializeField] private float maxCardHandLength = 4f;
     [SerializeField] private float additionalCardRotation = 6f;
     [SerializeField] private int minNumberOfCards = 2;
     [SerializeField] private int maxNumberOfCards = 6;
@@ -24,6 +24,7 @@ public class CardHandController : MonoBehaviour
 
     private List<CardController> cardControllers = new List<CardController>();
     private int lastChangedCardIndex = 0;
+    private bool isCardStatsChanging;
 
     private const string SPRITE_DOWNLOAD_URL = "https://picsum.photos/200";
 
@@ -56,11 +57,11 @@ public class CardHandController : MonoBehaviour
                 0.0001f * i);
             var cardController = Instantiate(cardControllerPrefab, cardSpawnPos, Quaternion.identity, cardsRoot);
             var cardTransform = cardController.transform;
-            var lookDirection = cardTransform.position - cardRotationCenter.position;
-            cardTransform.rotation = Quaternion.FromToRotation(cardTransform.up, lookDirection);
-            cardTransform.Rotate(Vector3.forward, additionalCardRotation);
+            var cardSpawnRotation = Quaternion.Euler(0f, 0f, additionalCardRotation) * (cardTransform.position - cardRotationCenter.position);
+            cardTransform.rotation = Quaternion.FromToRotation(Vector3.up, cardSpawnRotation);
             cardController.SetInfo(cardStatsSO.StartingAttack, cardStatsSO.StartingHealth, cardStatsSO.StartingMana, cardSprite);
             cardController.EventCardDestroyed += OnCardDestroyed;
+            cardController.EventStatChangeComplete += OnCardStatChangeCompleted;
             cardControllers.Add(cardController);
         }
     }
@@ -70,23 +71,25 @@ public class CardHandController : MonoBehaviour
         foreach (var cardController in cardControllers)
         {
             cardController.EventCardDestroyed -= OnCardDestroyed;
+            cardController.EventStatChangeComplete -= OnCardStatChangeCompleted;
         }
     }
 
     public void ChangeCardInfo()
     {
-        if (cardControllers.Count == 0)
+        if (cardControllers.Count == 0 || isCardStatsChanging)
         {
             return;
         }
-
-        cardControllers[lastChangedCardIndex].ChangeStats(Random.Range(minStatValue, maxStatValue + 1));
-        lastChangedCardIndex++;
 
         if (lastChangedCardIndex >= cardControllers.Count)
         {
             lastChangedCardIndex = 0;
         }
+
+        isCardStatsChanging = true;
+        cardControllers[lastChangedCardIndex].ChangeStats(Random.Range(minStatValue, maxStatValue + 1));
+        lastChangedCardIndex++;
     }
 
     private void OnCardDestroyed(CardController cardControllerArg)
@@ -98,13 +101,22 @@ public class CardHandController : MonoBehaviour
         for (int i = 0; i < cardControllers.Count; i++)
         {
             var cardEvaluationStep = 1f / (cardControllers.Count + 1);
-            var newCardPos = new Vector3(
+            var newPosition = new Vector3(
                 cardHandCenter.position.x + maxCardHandLength * cardsHorizontalPlacementCurve.Evaluate(cardEvaluationStep + cardEvaluationStep * i),
                 cardHandCenter.position.y + maxCardHandHeight * cardsVerticalPlacementCurve.Evaluate(cardEvaluationStep + cardEvaluationStep * i),
                 0.0001f * i);
             var cardTransform = cardControllers[i].transform;
-            var lookDirection = newCardPos - cardRotationCenter.position;
-            var newRotation = Quaternion.FromToRotation(cardTransform.up, lookDirection);
+            var newRotationDirection = Quaternion.Euler(0f, 0f, additionalCardRotation) * (newPosition - cardRotationCenter.position);
+            var newRotation = Quaternion.FromToRotation(Vector3.up, newRotationDirection);
+            cardTransform.DOMove(newPosition, cardsRearrangeTime).OnPlay(() =>
+            {
+                cardTransform.DORotateQuaternion(newRotation, cardsRearrangeTime);
+            });
         }
+    }
+
+    private void OnCardStatChangeCompleted()
+    {
+        isCardStatsChanging = false;
     }
 }
