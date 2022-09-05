@@ -290,7 +290,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -3}
+  m_AnchoredPosition: {x: 0, y: -2.5}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &375880593
@@ -817,12 +817,13 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   maxCardHandHeight: 0.5
-  maxCardHandLength: 6
+  maxCardHandLength: 4
   additionalCardRotation: 6
   minNumberOfCards: 2
   maxNumberOfCards: 6
   minStatValue: -2
   maxStatValue: 9
+  cardsRearrangeTime: 0.5
 --- !u!1 &1531875984
 GameObject:
   m_ObjectHideFlags: 0
@@ -944,14 +945,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1672847569}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -3.84, z: 5.94}
-  m_LocalScale: {x: 16.285843, y: 1, z: 11.966}
+  m_LocalRotation: {x: -0.18561043, y: -0, z: -0, w: 0.98262346}
+  m_LocalPosition: {x: 0, y: -1.43, z: 13.18}
+  m_LocalScale: {x: 30.470448, y: 1, z: 17.321413}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1531875985}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -21.393, y: 0, z: 0}
 --- !u!1 &1723297240
 GameObject:
   m_ObjectHideFlags: 0
