@@ -12,6 +12,7 @@ public class CardController : MonoBehaviour
 
     [SerializeField] private Image cardGlow;
     [SerializeField] private Image cardImage;
+    [SerializeField] private Collider cardCollider;
     [SerializeField] private TextMeshProUGUI attackValueText;
     [SerializeField] private TextMeshProUGUI healthValueText;
     [SerializeField] private TextMeshProUGUI manaValueText;
@@ -75,13 +76,9 @@ public class CardController : MonoBehaviour
         }
     }
 
-    public void SelectCard()
+    public void SetSelected(bool isSelected)
     {
-        cardGlow.gameObject.SetActive(true);
-    }
-
-    public void DeselectCard()
-    {
-        cardGlow.gameObject.SetActive(false);
+        cardGlow.gameObject.SetActive(isSelected);
+        cardCollider.enabled = !isSelected;
     }
 }

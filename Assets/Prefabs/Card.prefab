@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5750913180883361326}
   - component: {fileID: 5750913180883361312}
   - component: {fileID: 5750913180883361327}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: CardImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -87,7 +87,7 @@ GameObject:
   - component: {fileID: 5750913181157618898}
   - component: {fileID: 5750913181157618900}
   - component: {fileID: 5750913181157618899}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: CardGlow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -163,7 +163,7 @@ GameObject:
   - component: {fileID: 5750913181287931750}
   - component: {fileID: 5750913181287931768}
   - component: {fileID: 5750913181287931751}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: HealthBackground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -240,7 +240,7 @@ GameObject:
   - component: {fileID: 5750913181781106302}
   - component: {fileID: 5750913181781106288}
   - component: {fileID: 5750913181781106303}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: ManaBackground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -317,7 +317,7 @@ GameObject:
   - component: {fileID: 5750913181803334344}
   - component: {fileID: 5750913181803334346}
   - component: {fileID: 5750913181803334345}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: CardNameBackground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -394,7 +394,7 @@ GameObject:
   - component: {fileID: 5750913181833894223}
   - component: {fileID: 5750913181833894209}
   - component: {fileID: 5750913181833894208}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: CardNameText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -529,7 +529,7 @@ GameObject:
   - component: {fileID: 5750913181904944398}
   - component: {fileID: 5750913181904944384}
   - component: {fileID: 5750913181904944399}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -611,7 +611,7 @@ GameObject:
   - component: {fileID: 5750913181970456512}
   - component: {fileID: 5750913181970456514}
   - component: {fileID: 5750913181970456513}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: AttackValue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -746,7 +746,7 @@ GameObject:
   - component: {fileID: 5750913181980577246}
   - component: {fileID: 5750913181980577232}
   - component: {fileID: 5750913181980577247}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: CardDescription
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -881,7 +881,7 @@ GameObject:
   - component: {fileID: 5750913182051919271}
   - component: {fileID: 5750913182051919289}
   - component: {fileID: 5750913182051919288}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: AttackBackground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -958,7 +958,7 @@ GameObject:
   - component: {fileID: 5750913182065837972}
   - component: {fileID: 5750913182065837974}
   - component: {fileID: 5750913182065837973}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: HealthValue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1092,7 +1092,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5750913182312222961}
   - component: {fileID: 5750913182312222962}
-  m_Layer: 5
+  - component: {fileID: 3018946898621785456}
+  m_Layer: 6
   m_Name: Card
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1135,10 +1136,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardGlow: {fileID: 5750913181157618899}
   cardImage: {fileID: 5750913180883361327}
+  cardCollider: {fileID: 3018946898621785456}
   attackValueText: {fileID: 5750913181970456513}
   healthValueText: {fileID: 5750913182065837973}
   manaValueText: {fileID: 5750913182630236474}
   statChangeTime: 1
+--- !u!65 &3018946898621785456
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5750913182312222960}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2, y: 3, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5750913182630236472
 GameObject:
   m_ObjectHideFlags: 0
@@ -1150,7 +1165,7 @@ GameObject:
   - component: {fileID: 5750913182630236473}
   - component: {fileID: 5750913182630236475}
   - component: {fileID: 5750913182630236474}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: ManaValue
   m_TagString: Untagged
   m_Icon: {fileID: 0}

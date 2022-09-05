@@ -21,10 +21,17 @@ public class CardHandController : MonoBehaviour
     [SerializeField] private int minStatValue = -2;
     [SerializeField] private int maxStatValue = 9;
     [SerializeField] private float cardsRearrangeTime = 0.5f;
+    [SerializeField] private float cardMoveSpeed = 5f;
+    [SerializeField] private LayerMask cardLayer;
+    [SerializeField] private LayerMask groundLayer;
 
     private List<CardController> cardControllers = new List<CardController>();
     private int lastChangedCardIndex = 0;
+    private int cardsOnTableCount;
     private bool isCardStatsChanging;
+    private CardController selectedCard;
+    private Vector3 selectedCardInitialPosition;
+    private Vector3 selectedCardInitialRotation;
 
     private const string SPRITE_DOWNLOAD_URL = "https://picsum.photos/200";
 
@@ -75,6 +82,58 @@ public class CardHandController : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, 100f, cardLayer))
+            {
+                var cardController = hit.collider.GetComponent<CardController>();
+
+                if (cardController != null)
+                {
+                    selectedCard = cardController;
+                    var selectedCardTransform = selectedCard.transform;
+                    selectedCardInitialPosition = selectedCardTransform.position;
+                    selectedCardInitialRotation = selectedCardTransform.rotation.eulerAngles;
+                    selectedCard.transform.DORotate(Vector3.zero, cardsRearrangeTime);
+                    selectedCard.SetSelected(true);
+                }
+            }
+        }
+        else if (Input.GetMouseButtonUp(0) && selectedCard != null)
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit, 100f, groundLayer))
+            {
+                cardControllers.Remove(selectedCard);
+                cardsOnTableCount++;
+                selectedCard.transform.DOMove(hit.point + new Vector3(0f, 0.0001f * cardsOnTableCount, 0f), cardsRearrangeTime);
+                selectedCard.transform.DORotate(hit.collider.transform.rotation.eulerAngles, cardsRearrangeTime);
+                RearrangeCards();
+            }
+            else
+            {
+                selectedCard.transform.DOMove(selectedCardInitialPosition, cardsRearrangeTime);
+                selectedCard.transform.DORotate(selectedCardInitialRotation, cardsRearrangeTime);
+            }
+            selectedCard.SetSelected(false);
+            selectedCard = null;
+        }
+        else if (selectedCard != null)
+        {
+            var mousePosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 
+                Mathf.Abs((Camera.main.transform.position - cardsRoot.position).z)));
+            var selectedCardTransform = selectedCard.transform;
+            selectedCardTransform.position = Vector3.Lerp(selectedCard.transform.position, 
+                new Vector3(mousePosition.x, mousePosition.y, 0.0001f * (maxNumberOfCards + 1)), cardMoveSpeed * Time.deltaTime);
+        }
+    }
+
     public void ChangeCardInfo()
     {
         if (cardControllers.Count == 0 || isCardStatsChanging)
@@ -97,7 +156,11 @@ public class CardHandController : MonoBehaviour
         cardControllerArg.EventCardDestroyed -= OnCardDestroyed;
         cardControllers.Remove(cardControllerArg);
         Destroy(cardControllerArg.gameObject);
+        RearrangeCards();
+    }
 
+    private void RearrangeCards()
+    {
         for (int i = 0; i < cardControllers.Count; i++)
         {
             var cardEvaluationStep = 1f / (cardControllers.Count + 1);
@@ -108,10 +171,8 @@ public class CardHandController : MonoBehaviour
             var cardTransform = cardControllers[i].transform;
             var newRotationDirection = Quaternion.Euler(0f, 0f, additionalCardRotation) * (newPosition - cardRotationCenter.position);
             var newRotation = Quaternion.FromToRotation(Vector3.up, newRotationDirection);
-            cardTransform.DOMove(newPosition, cardsRearrangeTime).OnPlay(() =>
-            {
-                cardTransform.DORotateQuaternion(newRotation, cardsRearrangeTime);
-            });
+            cardTransform.DOMove(newPosition, cardsRearrangeTime);
+            cardTransform.DORotateQuaternion(newRotation, cardsRearrangeTime);
         }
     }
 
