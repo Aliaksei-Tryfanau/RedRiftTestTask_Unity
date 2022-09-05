@@ -27,11 +27,11 @@ public class CardHandController : MonoBehaviour
 
     private List<CardController> cardControllers = new List<CardController>();
     private int lastChangedCardIndex = 0;
-    private int cardsOnTableCount;
     private bool isCardStatsChanging;
     private CardController selectedCard;
     private Vector3 selectedCardInitialPosition;
     private Vector3 selectedCardInitialRotation;
+    private int selectedCardSiblingIndex;
 
     private const string SPRITE_DOWNLOAD_URL = "https://picsum.photos/200";
 
@@ -60,8 +60,8 @@ public class CardHandController : MonoBehaviour
             var cardEvaluationStep = 1f / (numberOfCards + 1);
             var cardSpawnPos = new Vector3(
                 cardHandCenter.position.x + maxCardHandLength * cardsHorizontalPlacementCurve.Evaluate(cardEvaluationStep + cardEvaluationStep * i), 
-                cardHandCenter.position.y + maxCardHandHeight * cardsVerticalPlacementCurve.Evaluate(cardEvaluationStep + cardEvaluationStep * i), 
-                0.0001f * i);
+                cardHandCenter.position.y + maxCardHandHeight * cardsVerticalPlacementCurve.Evaluate(cardEvaluationStep + cardEvaluationStep * i),
+                cardsRoot.position.z);
             var cardController = Instantiate(cardControllerPrefab, cardSpawnPos, Quaternion.identity, cardsRoot);
             var cardTransform = cardController.transform;
             var cardSpawnRotation = Quaternion.Euler(0f, 0f, additionalCardRotation) * (cardTransform.position - cardRotationCenter.position);
@@ -98,6 +98,8 @@ public class CardHandController : MonoBehaviour
                     var selectedCardTransform = selectedCard.transform;
                     selectedCardInitialPosition = selectedCardTransform.position;
                     selectedCardInitialRotation = selectedCardTransform.rotation.eulerAngles;
+                    selectedCardSiblingIndex = selectedCardTransform.GetSiblingIndex();
+                    selectedCard.transform.SetAsLastSibling();
                     selectedCard.transform.DORotate(Vector3.zero, cardsRearrangeTime);
                     selectedCard.SetSelected(true);
                 }
@@ -111,16 +113,17 @@ public class CardHandController : MonoBehaviour
             if (Physics.Raycast(ray, out hit, 100f, groundLayer))
             {
                 cardControllers.Remove(selectedCard);
-                cardsOnTableCount++;
-                selectedCard.transform.DOMove(hit.point + new Vector3(0f, 0.0001f * cardsOnTableCount, 0f), cardsRearrangeTime);
+                selectedCard.transform.DOMove(hit.point + new Vector3(0f, 0.0001f, 0f), cardsRearrangeTime);
                 selectedCard.transform.DORotate(hit.collider.transform.rotation.eulerAngles, cardsRearrangeTime);
                 RearrangeCards();
             }
             else
             {
+                selectedCard.transform.SetSiblingIndex(selectedCardSiblingIndex);
                 selectedCard.transform.DOMove(selectedCardInitialPosition, cardsRearrangeTime);
                 selectedCard.transform.DORotate(selectedCardInitialRotation, cardsRearrangeTime);
             }
+
             selectedCard.SetSelected(false);
             selectedCard = null;
         }
@@ -130,7 +133,7 @@ public class CardHandController : MonoBehaviour
                 Mathf.Abs((Camera.main.transform.position - cardsRoot.position).z)));
             var selectedCardTransform = selectedCard.transform;
             selectedCardTransform.position = Vector3.Lerp(selectedCard.transform.position, 
-                new Vector3(mousePosition.x, mousePosition.y, 0.0001f * (maxNumberOfCards + 1)), cardMoveSpeed * Time.deltaTime);
+                new Vector3(mousePosition.x, mousePosition.y, selectedCardTransform.position.z), cardMoveSpeed * Time.deltaTime);
         }
     }
 
@@ -167,7 +170,7 @@ public class CardHandController : MonoBehaviour
             var newPosition = new Vector3(
                 cardHandCenter.position.x + maxCardHandLength * cardsHorizontalPlacementCurve.Evaluate(cardEvaluationStep + cardEvaluationStep * i),
                 cardHandCenter.position.y + maxCardHandHeight * cardsVerticalPlacementCurve.Evaluate(cardEvaluationStep + cardEvaluationStep * i),
-                0.0001f * i);
+                cardsRoot.position.z);
             var cardTransform = cardControllers[i].transform;
             var newRotationDirection = Quaternion.Euler(0f, 0f, additionalCardRotation) * (newPosition - cardRotationCenter.position);
             var newRotation = Quaternion.FromToRotation(Vector3.up, newRotationDirection);
